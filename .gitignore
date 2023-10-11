@@ -1,0 +1,8 @@
+# Packages
+/env
+
+# Credential file
+.env
+
+# cache folder
+__pycache__
