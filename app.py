@@ -46,9 +46,10 @@ if selected == 'Data Entry':
     st.header(f'Data Entry in {currency}')
     with st.form("entry_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
+        
         col1.selectbox("Select Month: ", months, key='month')
         col2.selectbox("Select Year: ", years, key='year')
-        
+        name = st.text_input('Enter your name:')
         "---"
         with st.expander("Income"):
             for income in incomes:
