@@ -20,7 +20,7 @@ st.set_page_config(page_title=page_title, page_icon=page_icon,layout=layout)
 st.title(page_title + " " + page_icon)
 
 # --- DROP DOWN VALUES FOR SELECTING THE PERIOD ---
-years = [datetime.today().year, datetime.today().year + 1]
+years = [datetime.today().year, datetime.today().year - 1]
 months = list(calendar.month_name[1:])
 
 # --- HIDE STREAMLIT STYLE ---
@@ -46,7 +46,7 @@ if selected == 'Data Entry':
     st.header(f'Data Entry in {currency}')
     with st.form("entry_form", clear_on_submit=True):
         name = st.text_input('Enter your name:')
-
+        # Create 2 colums for Month and year entry
         col1, col2 = st.columns(2)
         col1.selectbox("Select Month: ", months, key='month')
         col2.selectbox("Select Year: ", years, key='year')
@@ -58,11 +58,10 @@ if selected == 'Data Entry':
         with st.expander("Expenses"):
             for expense in expenses:
                 st.number_input(f"{expense}: ", min_value=0, format="%i", step=10, key=expense)
-        
+
         with st.expander("Comments"):
             comment = st.text_area("", placeholder="Enter a comment here...")
 
-        "---"
         submitted = st.form_submit_button("Save Data") 
         if submitted:
             period = str(st.session_state["year"]) + "_" + str(st.session_state["month"])
@@ -79,16 +78,15 @@ if selected == 'Data Visualization':
         name = st.selectbox("Select User: ", db.fetch_all_users())
         usr_submit = st.form_submit_button("Get User Periods")
         # Get the selected user period
-        usr_period = db.fetch_user_periods(user=name)
-        period = st.selectbox("Select Period: ", usr_period)
+        usr_data = db.fetch_user_data(user=name)
+        period = st.selectbox("Select Period: ", list(usr_data.keys()))
         submitted = st.form_submit_button("Plot Period")
         if submitted:
             # Get Data from database
-            period_data = db.fetch_user_period_data(name, period)
-            comment = period_data[0].get('comment')
-            expenses = period_data[0].get('expenses')
-            incomes = period_data[0].get('incomes')
-            income = period_data[0].get('period')
+            comment = usr_data[period].get('comment')
+            expenses = usr_data[period].get('expenses')
+            incomes = usr_data[period].get('incomes')
+            income = usr_data[period].get('period')
 
             # Create Metrics
             total_income = sum(incomes.values())
